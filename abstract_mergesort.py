@@ -33,4 +33,4 @@ class AbstractMergeSort(ABC):
     # region private methods
     def __format_run_time(self) -> None:
         """format the run time"""
-        return "{self._run_time:2f}"
+        return f"{self._run_time:2f}"

@@ -19,6 +19,11 @@ class UserInterface:
             quantity = self.__get_input()
         return int(quantity)
 
+    def display_run_times(self, regular_run: float, multi_run: float) -> None:
+        """method to display run times"""
+        print(f"Regular: {regular_run}")
+        print(f"Multiprocess: {multi_run}")
+
     # region private methods
     def __get_input(self) -> str:
         """get input method"""

@@ -1,7 +1,14 @@
 """mergesort class"""
 
+# System imports
 
-class MergeSort:
+# First Party Imports
+from abstract_mergesort import AbstractMergeSort
+
+# Third Party Imports
+
+
+class MergeSort(AbstractMergeSort):
     """MergeSort Class"""
 
     def __init__(self):
