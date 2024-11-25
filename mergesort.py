@@ -1,3 +1,6 @@
+"""mergesort class"""
+
+
 class MergeSort:
     """MergeSort Class"""
 
