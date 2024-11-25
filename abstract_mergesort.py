@@ -21,9 +21,9 @@ class AbstractMergeSort(ABC):
 
     def timed_sort(self, mergeable: list[int]) -> None:
         """sort with timer"""
-        start_time = time.time()
+        start_time = time.perf_counter()
         self.sort(mergeable)
-        end_time = time.time()
+        end_time = time.perf_counter()
         self._run_time = end_time - start_time
 
     def get_run_time(self) -> float:
@@ -33,4 +33,4 @@ class AbstractMergeSort(ABC):
     # region private methods
     def __format_run_time(self) -> None:
         """format the run time"""
-        return f"{self._run_time:2f}"
+        return f"{self._run_time:5f}"
