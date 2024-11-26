@@ -12,7 +12,9 @@ import time
 class AbstractMergeSort(ABC):
     """abstract mergesort class"""
 
-    _run_time: float = 0.0
+    def __init__(self):
+        # constructor
+        self._run_time: float = None
 
     # region public methods
     @abstractmethod

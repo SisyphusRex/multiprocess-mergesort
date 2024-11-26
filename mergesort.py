@@ -12,7 +12,8 @@ class MergeSort(AbstractMergeSort):
     """MergeSort Class"""
 
     def __init__(self):
-        # constructor
+        """constructor"""
+        super().__init__()
         self._aux = []
 
     # Main entry point to sort
