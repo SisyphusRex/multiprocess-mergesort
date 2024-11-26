@@ -1,6 +1,7 @@
 """multi merge sort module"""
 
 # System Imports
+from multiprocessing import Pool
 
 # First Party Imports
 from abstract_mergesort import AbstractMergeSort

@@ -20,6 +20,6 @@ class RandomNumbers:
         i: int = 0
         random_number_list: list[int] = []
         while i < list_length:
-            random_number_list.append(random.randint(1, 100))
+            random_number_list.append(random.randint(0, 100))
             i += 1
         return random_number_list

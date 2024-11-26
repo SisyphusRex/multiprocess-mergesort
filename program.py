@@ -1,5 +1,6 @@
 # System Imports
 import copy
+import os
 
 # First Party Imports
 from user_interface import UserInterface
@@ -14,6 +15,7 @@ def main():
     """main program flow"""
     ui = UserInterface()
     ui.display_welcome()
+    print(os.cpu_count())
     while True:
 
         size_of_collection: int = ui.get_size_of_collection()
