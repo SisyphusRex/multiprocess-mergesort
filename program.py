@@ -1,6 +1,7 @@
 # System Imports
 import copy
 import os
+import multiprocessing
 
 # First Party Imports
 from user_interface import UserInterface
@@ -33,3 +34,29 @@ def main():
         # multi_time: float = multi_merge.get_run_time()
 
         ui.display_run_times(regular_time, 0.0)
+
+        test_method(deep_copy_collection)
+
+
+def process_slice(data_slice: list[int]):
+    """method to do something to slice"""
+    print(data_slice)
+
+
+def test_method(collection):
+    """test method"""
+    processor_count: int = os.cpu_count()
+    chunk_size: int = int(len(collection) / processor_count)
+    slices: list[list[int]] = []
+
+    for i in range(0, len(collection), chunk_size):
+        slices.append(collection[i : i + chunk_size])
+
+    processes = []
+    for slice_data in slices:
+        p = multiprocessing.Process(target=process_slice, args=(slice_data))
+        processes.append(p)
+        p.start()
+
+    for p in processes:
+        p.join()
