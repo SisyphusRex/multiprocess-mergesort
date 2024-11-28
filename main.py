@@ -17,5 +17,5 @@ def run(*args):
 # Prevent running on import.
 if __name__ == "__main__":
     run(*sys.argv[1:])
-else:
-    raise ImportError("Run this file directly, don't import it!")
+#else:
+#    raise ImportError("Run this file directly, don't import it!")
