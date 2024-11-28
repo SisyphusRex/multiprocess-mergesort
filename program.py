@@ -17,8 +17,6 @@ def main():
     ui = UserInterface()
     ui.display_welcome()
 
-
-
     size_of_collection: int = ui.get_size_of_collection()
 
     my_random_generated_numbers: RandomNumbers = RandomNumbers(size_of_collection)
@@ -30,13 +28,8 @@ def main():
     print(deep_copy_collection)
     multi_merge.timed_sort(deep_copy_collection)
     print(deep_copy_collection)
-
     regular_time: float = regular_merge.get_run_time()
 
     multi_time: float = multi_merge.get_run_time()
 
     ui.display_run_times(regular_time, multi_time)
-
-
-
-

@@ -25,18 +25,24 @@ class MultiMergeSort(AbstractMergeSort):
         processor_count: int = 5
         mergeable_length = len(mergeable)
         chunk_size = mergeable_length // processor_count
-        shared_collection = multiprocessing.Array('i', mergeable, lock=True)
+        shared_collection = multiprocessing.Array("i", mergeable, lock=True)
 
         processes = []
         for core in range(processor_count):
             if core < processor_count - 1:
-                p = multiprocessing.Process(target=self._do_process, args=(shared_collection, core * chunk_size, chunk_size))
+                p = multiprocessing.Process(
+                    target=self._do_process,
+                    args=(shared_collection, core * chunk_size, chunk_size),
+                )
                 processes.append(p)
                 p.start()
             else:
-                final_chunk_size = len(shared_collection[core * chunk_size : ])
+                final_chunk_size = len(shared_collection[core * chunk_size :])
 
-                p = multiprocessing.Process(target=self._do_process, args=(shared_collection, core * chunk_size, final_chunk_size))
+                p = multiprocessing.Process(
+                    target=self._do_process,
+                    args=(shared_collection, core * chunk_size, final_chunk_size),
+                )
                 processes.append(p)
                 p.start()
         for p in processes:
@@ -48,17 +54,18 @@ class MultiMergeSort(AbstractMergeSort):
         # TODO: fix this mess
 
         for pair in range(chunk_size):
-            if pair < chunk_size -1:
+            if pair < chunk_size - 1:
                 bottom_index = pair * chunk_size * 2
                 low = 0
-                top_index = ((pair + 1) * 2 * chunk_size)
+                top_index = (pair + 1) * 2 * chunk_size
                 high = (2 * chunk_size) - 1
                 mid = low + int((high - low) / 2)
-                sub_list = shared_collection[bottom_index : top_index]
+                sub_list = shared_collection[bottom_index:top_index]
                 print(f"Sublist Length: {len(sub_list)} {sub_list}")
+                print(f"chunk size: {chunk_size}")
                 print(f"Pair: {pair}, low: {low}, mid: {mid}, high: {high}")
                 self._final_merge(sub_list, low, mid, high)
-                shared_collection[low : high + 1] = sub_list
+                shared_collection[bottom_index:top_index] = sub_list
                 self._update_original_list(mergeable, shared_collection)
                 print(f"Pair: {pair} {mergeable}")
 
@@ -66,21 +73,19 @@ class MultiMergeSort(AbstractMergeSort):
                 low = 0
                 high = len(shared_collection) - 1
                 mid = pair * chunk_size * 2 - 1
-
                 self._final_merge(shared_collection, low, mid, high)
-
-
-
-
 
         self._update_original_list(mergeable, shared_collection)
 
-
-    def _do_process(self, shared_collection: list[int], process_index: int, chunk_size: int) -> None:
+    def _do_process(
+        self, shared_collection: list[int], process_index: int, chunk_size: int
+    ) -> None:
         """individual process for sorting sublist"""
-        process_slice: list[int] = shared_collection[process_index : process_index + chunk_size]
+        process_slice: list[int] = shared_collection[
+            process_index : process_index + chunk_size
+        ]
         self._populate_aux_initially(process_slice)
-        #print(f"chunk size: {chunk_size}")
+        # print(f"chunk size: {chunk_size}")
         self._sort(process_slice, 0, chunk_size - 1)
         shared_collection[process_index : process_index + chunk_size] = process_slice
 
@@ -117,8 +122,8 @@ class MultiMergeSort(AbstractMergeSort):
     def _copy_from_main_to_aux(self, mergeable, low, high) -> None:
         """method to copy from main array to aux"""
         for k in range(low, high + 1):
-            #print(f"low: {low} high: {high}")
-            #print(mergeable)
+            # print(f"low: {low} high: {high}")
+            # print(mergeable)
             self._aux[k] = mergeable[k]
 
     def _merge_from_aux_to_main(self, mergeable, low, mid, high) -> None:
