@@ -210,3 +210,29 @@ if __name__ == "__main__":
             parallel_timer["merge"],
         )
         result_log.write("%df %4.3f %4.2f %4.3f\n" % benchmark_data)
+
+
+for pair in range(number_of_pairs):
+            if pair < number_of_pairs - 1:
+                bottom_index = pair * chunk_size * 2
+                low = 0
+                top_index = (pair + 1) * 2 * chunk_size
+                high = (2 * chunk_size) - 1
+                mid = low + int((high - low) / 2)
+                sub_list = shared_collection[bottom_index:top_index]
+                print(f"Sublist Length: {len(sub_list)} {sub_list}")
+                print(f"chunk size: {chunk_size}")
+                print(f"Pair: {pair}, low: {low}, mid: {mid}, high: {high}")
+                self._final_merge(sub_list, low, mid, high)
+                shared_collection[bottom_index:top_index] = sub_list
+                self._update_original_list(mergeable, shared_collection)
+                print(f"Pair: {pair} {mergeable}")
+
+        for pair in range(number_of_pairs):
+            if pair < number_of_pairs:
+                pass
+            # else:
+            #    low = 0
+            #    high = len(shared_collection) - 1
+            #    mid = pair * chunk_size * 2 - 1
+            #    self._final_merge(shared_collection, low, mid, high)

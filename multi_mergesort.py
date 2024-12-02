@@ -17,71 +17,57 @@ class MultiMergeSort(AbstractMergeSort):
         """constructor"""
         super().__init__()
         self._aux = []
+        self._chunk_size: int = None
+        self._final_chunk_size: int = None
+        self._shared_collection: list[int] = None
 
     # Main entry point to sort
     def sort(self, mergeable):
         """sort method"""
+        processor_count = 4
+        self._shared_collection = multiprocessing.Array("i", mergeable, lock=True)
+        collection_length = len(self._shared_collection)
+        self._chunk_size = collection_length // processor_count
 
-        processor_count: int = 4
-        mergeable_length = len(mergeable)
-        chunk_size = mergeable_length // processor_count
-        shared_collection = multiprocessing.Array("i", mergeable, lock=True)
+        self._multi_sort(processor_count)
+        left_chunk_stop_index = ((processor_count - 1) * self._chunk_size) - 1
 
+    def _merge_chunks(self, left_chunk_stop_index):
+        """method to merge separate sorted chunks formed by mult_sort"""
+        if len(left_chunk_stop_index) == 0:
+            self._final_merge()
+
+    def _multi_sort(self, processor_count):
+        """divide array into subarrays and assign process to sort"""
         processes = []
         for core in range(processor_count):
             if core < processor_count - 1:
                 p = multiprocessing.Process(
                     target=self._do_process,
-                    args=(shared_collection, core * chunk_size, chunk_size),
+                    args=(
+                        self._shared_collection,
+                        core * self._chunk_size,
+                        self._chunk_size,
+                    ),
                 )
                 processes.append(p)
                 p.start()
             else:
-                final_chunk_size = len(shared_collection[core * chunk_size :])
-                print(f"final chunk size: {final_chunk_size}")
-
+                self._final_chunk_size = len(
+                    self._shared_collection[core * self._chunk_size :]
+                )
                 p = multiprocessing.Process(
                     target=self._do_process,
-                    args=(shared_collection, core * chunk_size, final_chunk_size),
+                    args=(
+                        self._shared_collection,
+                        core * self._chunk_size,
+                        self._final_chunk_size,
+                    ),
                 )
                 processes.append(p)
                 p.start()
         for p in processes:
             p.join()
-
-        self._update_original_list(mergeable, shared_collection)
-        print(f"before final merge: {mergeable}")
-
-        # TODO: fix this mess
-
-        number_of_pairs = processor_count // 2
-
-        for pair in range(number_of_pairs):
-            if pair < number_of_pairs - 1:
-                bottom_index = pair * chunk_size * 2
-                low = 0
-                top_index = (pair + 1) * 2 * chunk_size
-                high = (2 * chunk_size) - 1
-                mid = low + int((high - low) / 2)
-                sub_list = shared_collection[bottom_index:top_index]
-                print(f"Sublist Length: {len(sub_list)} {sub_list}")
-                print(f"chunk size: {chunk_size}")
-                print(f"Pair: {pair}, low: {low}, mid: {mid}, high: {high}")
-                self._final_merge(sub_list, low, mid, high)
-                shared_collection[bottom_index:top_index] = sub_list
-                self._update_original_list(mergeable, shared_collection)
-                print(f"Pair: {pair} {mergeable}")
-
-        for pair in range(number_of_pairs):
-            if pair < number_of_pairs:
-                pass
-            # else:
-            #    low = 0
-            #    high = len(shared_collection) - 1
-            #    mid = pair * chunk_size * 2 - 1
-            #    self._final_merge(shared_collection, low, mid, high)
-
-        self._update_original_list(mergeable, shared_collection)
 
     def _do_process(
         self, shared_collection: list[int], process_index: int, chunk_size: int
@@ -95,9 +81,9 @@ class MultiMergeSort(AbstractMergeSort):
         self._sort(process_slice, 0, chunk_size - 1)
         shared_collection[process_index : process_index + chunk_size] = process_slice
 
-    def _update_original_list(self, mergeable, shared_collection):
+    def _update_original_list(self, mergeable):
         """method to update original list"""
-        for index, item in enumerate(shared_collection):
+        for index, item in enumerate(self._shared_collection):
             mergeable[index] = item
 
     def _populate_aux_initially(self, mergeable) -> None:
