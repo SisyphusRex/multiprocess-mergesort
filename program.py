@@ -25,9 +25,11 @@ def main():
     regular_merge = MergeSort()
     multi_merge = MultiMergeSort()
     regular_merge.timed_sort(original_collection)
-    print(deep_copy_collection)
+    print(f"original: {deep_copy_collection}")
+    print()
     multi_merge.timed_sort(deep_copy_collection)
-    print(deep_copy_collection)
+    print()
+    print(f"sorted: {deep_copy_collection}")
     regular_time: float = regular_merge.get_run_time()
 
     multi_time: float = multi_merge.get_run_time()

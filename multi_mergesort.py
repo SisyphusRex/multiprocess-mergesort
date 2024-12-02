@@ -22,7 +22,7 @@ class MultiMergeSort(AbstractMergeSort):
     def sort(self, mergeable):
         """sort method"""
 
-        processor_count: int = 5
+        processor_count: int = 4
         mergeable_length = len(mergeable)
         chunk_size = mergeable_length // processor_count
         shared_collection = multiprocessing.Array("i", mergeable, lock=True)
@@ -38,6 +38,7 @@ class MultiMergeSort(AbstractMergeSort):
                 p.start()
             else:
                 final_chunk_size = len(shared_collection[core * chunk_size :])
+                print(f"final chunk size: {final_chunk_size}")
 
                 p = multiprocessing.Process(
                     target=self._do_process,
@@ -49,12 +50,14 @@ class MultiMergeSort(AbstractMergeSort):
             p.join()
 
         self._update_original_list(mergeable, shared_collection)
-        print(mergeable)
+        print(f"before final merge: {mergeable}")
 
         # TODO: fix this mess
 
-        for pair in range(chunk_size):
-            if pair < chunk_size - 1:
+        number_of_pairs = processor_count // 2
+
+        for pair in range(number_of_pairs):
+            if pair < number_of_pairs - 1:
                 bottom_index = pair * chunk_size * 2
                 low = 0
                 top_index = (pair + 1) * 2 * chunk_size
@@ -69,11 +72,14 @@ class MultiMergeSort(AbstractMergeSort):
                 self._update_original_list(mergeable, shared_collection)
                 print(f"Pair: {pair} {mergeable}")
 
-            else:
-                low = 0
-                high = len(shared_collection) - 1
-                mid = pair * chunk_size * 2 - 1
-                self._final_merge(shared_collection, low, mid, high)
+        for pair in range(number_of_pairs):
+            if pair < number_of_pairs:
+                pass
+            # else:
+            #    low = 0
+            #    high = len(shared_collection) - 1
+            #    mid = pair * chunk_size * 2 - 1
+            #    self._final_merge(shared_collection, low, mid, high)
 
         self._update_original_list(mergeable, shared_collection)
 
