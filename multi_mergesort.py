@@ -13,30 +13,31 @@ from abstract_mergesort import AbstractMergeSort
 class MultiMergeSort(AbstractMergeSort):
     """Multiprocess merge sort class"""
 
-    def __init__(self):
+    def __init__(self, processor_count):
         """constructor"""
         super().__init__()
         self._aux = []
         self._chunk_size: int = None
         self._final_chunk_size: int = None
         self._shared_collection: list[int] = None
+        self._processor_count = processor_count
 
     # Main entry point to sort
     def sort(self, mergeable):
         """sort method"""
-        processor_count = os.cpu_count()
+
         self._shared_collection = multiprocessing.Array("i", mergeable, lock=True)
         collection_length = len(self._shared_collection)
-        self._chunk_size = collection_length // processor_count
+        self._chunk_size = collection_length // self._processor_count
 
-        self._multi_sort(processor_count)
-        self._merge_chunks(processor_count)
+        self._multi_sort()
+        self._merge_chunks()
         self._update_original_list(mergeable)
 
-    def _merge_chunks(self, processor_count):
+    def _merge_chunks(self):
         """method to merge separate sorted chunks formed by mult_sort"""
-        for sublist_to_merge in range(processor_count):
-            if sublist_to_merge < processor_count - 2:
+        for sublist_to_merge in range(self._processor_count):
+            if sublist_to_merge < self._processor_count - 2:
                 low = 0
                 mid = self._chunk_size + sublist_to_merge * self._chunk_size - 1
                 high = self._chunk_size * 2 + sublist_to_merge * self._chunk_size - 1
@@ -50,11 +51,11 @@ class MultiMergeSort(AbstractMergeSort):
                 high = len(self._shared_collection) - 1
                 self._final_merge(self._shared_collection, low, mid, high)
 
-    def _multi_sort(self, processor_count):
+    def _multi_sort(self):
         """divide array into subarrays and assign process to sort"""
         processes = []
-        for core in range(processor_count):
-            if core < processor_count - 1:
+        for core in range(self._processor_count):
+            if core < self._processor_count - 1:
                 p = multiprocessing.Process(
                     target=self._do_process,
                     args=(
