@@ -24,18 +24,31 @@ class MultiMergeSort(AbstractMergeSort):
     # Main entry point to sort
     def sort(self, mergeable):
         """sort method"""
-        processor_count = 4
+        processor_count = os.cpu_count()
         self._shared_collection = multiprocessing.Array("i", mergeable, lock=True)
         collection_length = len(self._shared_collection)
         self._chunk_size = collection_length // processor_count
 
         self._multi_sort(processor_count)
-        left_chunk_stop_index = ((processor_count - 1) * self._chunk_size) - 1
+        self._merge_chunks(processor_count)
+        self._update_original_list(mergeable)
 
-    def _merge_chunks(self, left_chunk_stop_index):
+    def _merge_chunks(self, processor_count):
         """method to merge separate sorted chunks formed by mult_sort"""
-        if len(left_chunk_stop_index) == 0:
-            self._final_merge()
+        for sublist_to_merge in range(processor_count):
+            if sublist_to_merge < processor_count - 2:
+                low = 0
+                mid = self._chunk_size + sublist_to_merge * self._chunk_size - 1
+                high = self._chunk_size * 2 + sublist_to_merge * self._chunk_size - 1
+                sublist = self._shared_collection[: high + 1]
+                self._final_merge(sublist, low, mid, high)
+                self._shared_collection[: high + 1] = sublist
+
+            else:
+                low = 0
+                mid = self._chunk_size + sublist_to_merge * self._chunk_size - 1
+                high = len(self._shared_collection) - 1
+                self._final_merge(self._shared_collection, low, mid, high)
 
     def _multi_sort(self, processor_count):
         """divide array into subarrays and assign process to sort"""
