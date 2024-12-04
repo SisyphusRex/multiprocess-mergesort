@@ -29,6 +29,7 @@ def main():
         match choice:
             case 0:
                 size_of_collection: int = ui.get_size_of_collection()
+                ui.display_creating_list_message()
                 my_random_generated_numbers: RandomNumbers = RandomNumbers(
                     size_of_collection
                 )
@@ -44,10 +45,17 @@ def main():
                         raise NoProcessors
                     regular_merge = MergeSort()
                     multi_merge = MultiMergeSort(number_of_processors)
+
+                    ui.display_single_process_message()
                     regular_merge.timed_sort(original_collection)
-                    multi_merge.timed_sort(deep_copy_collection)
                     regular_time: float = regular_merge.get_run_time()
+                    ui.display_single_process_success(regular_time)
+
+                    ui.display_multi_process_message()
+                    multi_merge.timed_sort(deep_copy_collection)
                     multi_time: float = multi_merge.get_run_time()
+                    ui.display_multi_process_success(multi_time)
+
                     ui.display_run_times(
                         regular_time,
                         multi_time,

@@ -66,6 +66,33 @@ class UserInterface:
 
         return int(quantity)
 
+    def display_creating_list_message(self):
+        """method to display creating list message"""
+        print("Populating the list with random numbers...", flush=True)
+        print()
+
+    def display_multi_process_message(self):
+        """display single process message"""
+        print("Performing multi process MergeSort...", flush=True)
+        print()
+
+    def display_multi_process_success(self, run_time):
+        """display sucess message and runtime"""
+        print("Multi process MergeSort completed in:")
+        print_success(f"{run_time:5f} seconds")
+        print()
+
+    def display_single_process_message(self):
+        """display single process message"""
+        print("Performing single process MergeSort...", flush=True)
+        print()
+
+    def display_single_process_success(self, run_time: float):
+        """display success message and runtime"""
+        print("Single process MergeSort completed in:")
+        print_success(f"{run_time:5f} seconds")
+        print()
+
     def display_run_times(
         self,
         regular_run: float,
